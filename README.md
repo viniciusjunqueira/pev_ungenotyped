@@ -1,7 +1,7 @@
 # Prediction Error Variance Comparison for Single-Step GBLUP
 
 ## Overview
-This repository contains code to reproduce the numerical examples presented in *"Derivation of prediction error variance for non-genotyped individuals in genomic selection"* submitted to *Genetics*.
+This repository contains code to reproduce the numerical examples presented in *"Derivation of prediction error variance for non-genotyped individuals in genomic selection"*.
 
 The analysis demonstrates that:  
 1. Direct MME inversion and Schur complement methods produce numerically identical PEV estimates.  
