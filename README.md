@@ -12,7 +12,7 @@ The analysis demonstrates that:
 
 | Method | Description | Equation |
 |--------|-------------|----------|
-| **Direct MME** | Full coefficient matrix inversion | PEV = σ²ₑ × (C⁻¹)ᵧᵧ |
+| **Direct MME** | Full coefficient matrix inversion | PEV = (C⁻¹)ᵧᵧ |
 | **Schur Complement** | Efficient block matrix approach | PEV = [G^yy - G^yt B^22 G^ty]⁻¹ |
 | **Case 1: No Fixed Effects** | Simplified when fixed effects are negligible | PEV = [G^yy - G^yt(Z'R⁻¹Z + G^tt)⁻¹G^ty]⁻¹ |
 | **Case 2: No Phenotypes** | When phenotypic data is unavailable | PEV = [G^yy - G^yt(G^tt)⁻¹G^ty]⁻¹ |
