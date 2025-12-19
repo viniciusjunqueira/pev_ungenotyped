@@ -25,30 +25,21 @@ generate_figures <- function(results, tables, output_dir) {
           , legend.title = element_blank()
           , text = element_text(size = 20))
   
-  # PEV scatterplots
-  p_direct_schur <- ggplot(tables$individual, 
+  # PEV scatterplot
+  p_direct_schur <- ggplot(tables$individual,
                            aes(x = PEV_direct, y = PEV_schur, color = size)) +
     geom_point(alpha = 0.6) +
     geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
     labs(title = "Direct MME vs Schur Complement",
          x = "PEV (Direct)", y = "PEV (Schur)") +
     theme_minimal(base_size = 12)
-  
-  p_schur_pa <- ggplot(tables$individual, 
-                       aes(x = PEV_schur, y = PEV_PA, color = size)) +
-    geom_point(alpha = 0.6) +
-    geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
-    labs(title = "Schur Complement vs Parent Average",
-         x = "PEV (Schur)", y = "PEV (PA)") +
-    theme_minimal(base_size = 12)
-  
+
   # Save figures
-  ggsave(file.path(output_dir, "timing_comparison.pdf"), p_timing, 
+  ggsave(file.path(output_dir, "timing_comparison.pdf"), p_timing,
          width = 8, height = 6)
-  
-  pev_plots <- grid.arrange(p_direct_schur, p_schur_pa, ncol = 2)
-  ggsave(file.path(output_dir, "pev_comparison_plots.pdf"), pev_plots, 
-         width = 12, height = 5)
+
+  ggsave(file.path(output_dir, "pev_comparison_plots.pdf"), p_direct_schur,
+         width = 8, height = 6)
   
   message(sprintf("Figures saved to: %s/", output_dir))
 }

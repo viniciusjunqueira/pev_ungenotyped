@@ -116,19 +116,6 @@ run_pev_analysis <- function(problem_sizes, n_replicates, seed,
           PEV_schur <- sigma2_e * solve(S)
         })[3]
         
-        # Method 3: Parent average
-        PEV_training <- sigma2_e * diag(B_inv)[idx_train_start:idx_train_end]
-        acc_training <- sqrt(pmax(0, 1 - PEV_training / sigma2_u))
-        acc_map <- numeric(n_total)
-        acc_map[training_ids] <- acc_training
-        
-        PEV_PA <- vapply(young_ids, function(id) {
-          acc_sire <- if(ped$sire[id] > 0) acc_map[ped$sire[id]] else 0
-          acc_dam <- if(ped$dam[id] > 0) acc_map[ped$dam[id]] else 0
-          acc_PA <- sqrt((acc_sire^2 + acc_dam^2) / 4)
-          sigma2_u * (1 - acc_PA^2)
-        }, numeric(1))
-        
         # Store results
         timing_reps <- rbind(timing_reps, data.frame(
           replicate = rep,
@@ -140,10 +127,7 @@ run_pev_analysis <- function(problem_sizes, n_replicates, seed,
           replicate = rep,
           mean_pev_direct = mean(diag(PEV_direct)),
           mean_pev_schur = mean(diag(PEV_schur)),
-          mean_pev_PA = mean(PEV_PA),
-          max_diff_direct_schur = max(abs(PEV_direct - PEV_schur)),
-          cor_direct_PA = cor(diag(PEV_direct), PEV_PA),
-          cor_schur_PA = cor(diag(PEV_schur), PEV_PA)
+          max_diff_direct_schur = max(abs(PEV_direct - PEV_schur))
         ))
         
         if(rep == 1) {
@@ -151,7 +135,6 @@ run_pev_analysis <- function(problem_sizes, n_replicates, seed,
             animal = seq_len(size_params$n_young),
             PEV_direct = diag(PEV_direct),
             PEV_schur = diag(PEV_schur),
-            PEV_PA = PEV_PA,
             size = size_params$size_label
           )
         }
