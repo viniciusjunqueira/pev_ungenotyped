@@ -47,8 +47,14 @@ generate_result_tables <- function(results, output_dir) {
   # PEV comparison statistics
   comparison_table <- do.call(rbind, lapply(names(results$individual), function(size) {
     pev_data <- results$individual[[size]]
-    calc_comparison_stats(pev_data$PEV_direct, pev_data$PEV_schur,
-                          "Direct", "Schur") |> transform(size = size)
+    rbind(
+      calc_comparison_stats(pev_data$PEV_schur, pev_data$PEV_case1,
+                            "Schur", "Case1_NoFixedEffects"),
+      calc_comparison_stats(pev_data$PEV_schur, pev_data$PEV_case2,
+                            "Schur", "Case2_NoPhenotypes"),
+      calc_comparison_stats(pev_data$PEV_case1, pev_data$PEV_case2,
+                            "Case1_NoFixedEffects", "Case2_NoPhenotypes")
+    ) |> transform(size = size)
   }))
   
   write.csv(comparison_table, file.path(output_dir, "pev_comparison_statistics.csv"), 

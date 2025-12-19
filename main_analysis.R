@@ -96,7 +96,7 @@ run_pev_analysis <- function(problem_sizes, n_replicates, seed,
           # Correct indexing for young animals block
           idx_start <- ncol(X) + n_training + 1
           idx_end <- ncol(X) + n_training + size_params$n_young
-          PEV_direct <- sigma2_e * C_inv[idx_start:idx_end, idx_start:idx_end]
+          PEV_direct <- C_inv[idx_start:idx_end, idx_start:idx_end]
         })[3]
         
         # Method 2: Schur complement
@@ -106,35 +106,59 @@ run_pev_analysis <- function(problem_sizes, n_replicates, seed,
             cbind(t(Z_t) %*% R_inv %*% X, t(Z_t) %*% R_inv %*% Z_t + G_inv_tt)
           )
           B_inv <- solve(B)
-          
+
           # Correct indexing for training animals block in B_inv
           idx_train_start <- ncol(X) + 1
           idx_train_end <- ncol(X) + n_training
           B22_inv <- B_inv[idx_train_start:idx_train_end, idx_train_start:idx_train_end]
-          
+
           S <- G_inv_yy - G_inv_yt %*% B22_inv %*% G_inv_ty
-          PEV_schur <- sigma2_e * solve(S)
+          PEV_schur <- solve(S)
         })[3]
-        
+
+        # Method 3: Simplified Case 1 - No fixed effects
+        # B reduces to Z_t'R^{-1}Z_t + G^tt (no X terms)
+        # PEV(u_y) = [G^yy - G^yt(Z_t'R^{-1}Z_t + G^tt)^{-1}G^ty]^{-1}
+        time_case1 <- system.time({
+          B_case1 <- t(Z_t) %*% R_inv %*% Z_t + G_inv_tt
+          B_case1_inv <- solve(B_case1)
+          S_case1 <- G_inv_yy - G_inv_yt %*% B_case1_inv %*% G_inv_ty
+          PEV_case1 <- solve(S_case1)
+        })[3]
+
+        # Method 4: Simplified Case 2 - No phenotypic data
+        # B^22 = (G^tt)^{-1}, so we use G_inv_tt directly
+        # PEV(u_y) = [G^yy - G^yt(G^tt)^{-1}G^ty]^{-1}
+        time_case2 <- system.time({
+          G_tt_inv <- solve(G_inv_tt)  # This gives (G^tt)^{-1}
+          S_case2 <- G_inv_yy - G_inv_yt %*% G_tt_inv %*% G_inv_ty
+          PEV_case2 <- solve(S_case2)
+        })[3]
+
         # Store results
         timing_reps <- rbind(timing_reps, data.frame(
           replicate = rep,
-          method = c("Direct", "Schur"),
-          time_seconds = c(time_direct, time_schur)
+          method = c("Direct", "Schur", "Case1_NoFixedEffects", "Case2_NoPhenotypes"),
+          time_seconds = c(time_direct, time_schur, time_case1, time_case2)
         ))
-        
+
         pev_comparison <- rbind(pev_comparison, data.frame(
           replicate = rep,
           mean_pev_direct = mean(diag(PEV_direct)),
           mean_pev_schur = mean(diag(PEV_schur)),
-          max_diff_direct_schur = max(abs(PEV_direct - PEV_schur))
+          mean_pev_case1 = mean(diag(PEV_case1)),
+          mean_pev_case2 = mean(diag(PEV_case2)),
+          max_diff_direct_schur = max(abs(PEV_direct - PEV_schur)),
+          max_diff_schur_case1 = max(abs(diag(PEV_schur) - diag(PEV_case1))),
+          max_diff_schur_case2 = max(abs(diag(PEV_schur) - diag(PEV_case2)))
         ))
-        
+
         if(rep == 1) {
           individual_pev_list[[size_params$size_label]] <- data.frame(
             animal = seq_len(size_params$n_young),
-            PEV_direct = diag(PEV_direct),
             PEV_schur = diag(PEV_schur),
+            PEV_case1 = diag(PEV_case1),
+            PEV_case2 = diag(PEV_case2),
             size = size_params$size_label
           )
         }
