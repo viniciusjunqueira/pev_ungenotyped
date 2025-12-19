@@ -6,7 +6,7 @@
 source("config.R")
 
 # Check and install required packages
-required_packages <- c("MASS", "ggplot2", "gridExtra")
+required_packages <- c("MASS", "ggplot2", "gridExtra", "cowplot")
 missing_packages <- required_packages[!sapply(required_packages, requireNamespace, quietly = TRUE)]
 
 if (length(missing_packages) > 0) {
@@ -40,6 +40,15 @@ results <- run_pev_analysis(
 
 tables <- generate_result_tables(results, CONFIG$output_dir)
 
+# Create a copy of timing table with all methods for the new figures
+tables$timing_all <- tables$timing
+tables$timing_all$size <- factor(x = tables$timing_all$size, levels = c('Small'
+                                                                        ,'Medium'
+                                                                        ,'Large'
+                                                                        ,'Very Large'))
+
+# Keep original timing table with Direct/Schur comparison only
+tables$timing <- tables$timing[tables$timing$method %in% c('Direct', 'Schur'), ]
 tables$timing$size <- factor(x = tables$timing$size, levels = c('Small'
                                                                 ,'Medium'
                                                                 ,'Large'

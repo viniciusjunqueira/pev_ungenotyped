@@ -6,17 +6,28 @@ This repository contains code to reproduce the numerical examples presented in *
 The analysis demonstrates that:
 1. Direct MME inversion and Schur complement methods produce numerically identical PEV estimates.
 2. The Schur complement approach is computationally more efficient.
+3. Simplified PEV expressions (Cases 1 and 2 from the paper) provide approximations under specific assumptions.
+
+## Methods Implemented
+
+| Method | Description | Equation |
+|--------|-------------|----------|
+| **Direct MME** | Full coefficient matrix inversion | PEV = σ²ₑ × (C⁻¹)ᵧᵧ |
+| **Schur Complement** | Efficient block matrix approach | PEV = [G^yy - G^yt B^22 G^ty]⁻¹ |
+| **Case 1: No Fixed Effects** | Simplified when fixed effects are negligible | PEV = [G^yy - G^yt(Z'R⁻¹Z + G^tt)⁻¹G^ty]⁻¹ |
+| **Case 2: No Phenotypes** | When phenotypic data is unavailable | PEV = [G^yy - G^yt(G^tt)⁻¹G^ty]⁻¹ |
 
 ## Requirements
-- R version ≥ 4.0.0  
+- R version ≥ 4.0.0
 - Required packages:
-  - MASS  
-  - ggplot2  
-  - gridExtra  
+  - MASS
+  - ggplot2
+  - gridExtra
+  - cowplot
 
 Install packages:
 ```r
-install.packages(c("MASS", "ggplot2", "gridExtra"))
+install.packages(c("MASS", "ggplot2", "gridExtra", "cowplot"))
 ```
 
 ## How to Run
