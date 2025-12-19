@@ -3,10 +3,9 @@
 ## Overview
 This repository contains code to reproduce the numerical examples presented in *"Derivation of prediction error variance for non-genotyped individuals in genomic selection"*.
 
-The analysis demonstrates that:  
-1. Direct MME inversion and Schur complement methods produce numerically identical PEV estimates.  
-2. The Schur complement approach is computationally more efficient.  
-3. The parent-average method provides an approximation but systematically differs from MME-based methods.
+The analysis demonstrates that:
+1. Direct MME inversion and Schur complement methods produce numerically identical PEV estimates.
+2. The Schur complement approach is computationally more efficient.
 
 ## Requirements
 - R version ≥ 4.0.0  
