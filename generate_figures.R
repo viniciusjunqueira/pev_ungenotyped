@@ -97,8 +97,8 @@ generate_figures <- function(results, tables, output_dir) {
   )
 
   # Save publication figure (wide format for side-by-side panels)
-  ggsave(file.path(output_dir, "figure_pev_comparison.pdf"), final_plot, width = 12, height = 6, dpi = 600)
-  ggsave(file.path(output_dir, "figure_pev_comparison.tiff"), final_plot, width = 12, height = 6, dpi = 600, compression = "lzw")
+  ggsave(file.path(output_dir, "figure_pev_comparison.pdf"), final_plot, width = 12, height = 6, dpi = 600, bg = "white")
+  ggsave(file.path(output_dir, "figure_pev_comparison.tiff"), final_plot, width = 12, height = 6, dpi = 600, compression = "lzw", bg = "white")
   
   # ============================================
   # Figure 2: Timing Comparison (Direct vs Schur only)
